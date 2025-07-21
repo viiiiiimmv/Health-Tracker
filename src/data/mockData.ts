@@ -45,7 +45,7 @@ export const generateTimeSlots = (date: string): TimeSlot[] => {
   times.forEach(time => {
     slots.push({
       time,
-      available: Math.random() > 0.3 // Randomly make some slots unavailable
+      available: Math.random() > 0.3
     });
   });
   

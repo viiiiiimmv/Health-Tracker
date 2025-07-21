@@ -288,7 +288,7 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Profile Edit Modal */}
+      
       {showProfileModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 animate-fade-in">
           <form onSubmit={handleProfileSubmit} className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md animate-slide-up border border-gray-200">
