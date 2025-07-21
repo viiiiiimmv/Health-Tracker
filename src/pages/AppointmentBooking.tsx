@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, User, Star, CheckCircle } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { mockDoctors, generateTimeSlots } from '../data/mockData';
 import { Doctor, TimeSlot } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { Appointment } from '../types';
 
 export const AppointmentBooking: React.FC = () => {
+  const { user } = useAuth();
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [reason, setReason] = useState('');
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [isBooked, setIsBooked] = useState(false);
+
+  // Add state for appointments
+  const [appointments, setAppointments] = useState<Appointment[]>(() => {
+    if (!user) return [];
+    const data = localStorage.getItem(`appointments_${user.id}`);
+    return data ? JSON.parse(data) : [];
+  });
+
+  useEffect(() => {
+    if (user) {
+      const data = localStorage.getItem(`appointments_${user.id}`);
+      setAppointments(data ? JSON.parse(data) : []);
+    }
+  }, [user]);
 
   const handleDateChange = (date: string) => {
     setSelectedDate(date);
@@ -23,8 +40,21 @@ export const AppointmentBooking: React.FC = () => {
   };
 
   const handleBookAppointment = () => {
-    if (selectedDoctor && selectedDate && selectedTime && reason) {
-      // Simulate booking
+    if (selectedDoctor && selectedDate && selectedTime && reason && user) {
+      const newAppointment: Appointment = {
+        id: Date.now().toString(),
+        doctorId: selectedDoctor.id,
+        doctorName: selectedDoctor.name,
+        specialty: selectedDoctor.specialty,
+        date: selectedDate,
+        time: selectedTime,
+        status: 'upcoming',
+        reason,
+      };
+      const updatedAppointments = [...appointments, newAppointment];
+      setAppointments(updatedAppointments);
+      localStorage.setItem(`appointments_${user.id}`, JSON.stringify(updatedAppointments));
+      window.dispatchEvent(new Event('storage')); // Notify other tabs/components
       setTimeout(() => {
         setIsBooked(true);
       }, 1000);

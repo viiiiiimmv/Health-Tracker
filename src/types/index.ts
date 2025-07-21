@@ -5,6 +5,7 @@ export interface User {
   lastName: string;
   phone: string;
   dateOfBirth: string;
+  avatar?: string;
 }
 
 export interface Doctor {
